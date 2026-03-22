@@ -4,5 +4,5 @@ scikit-learn==1.4.2
 xgboost==2.0.3
 streamlit==1.33.0
 altair==4.2.2
-pillow==10.3.0
-# redeploy
+protobuf==3.20.3
+
