@@ -1,1 +1,1 @@
-"streamlit==1.32.0\nnumpy==1.26.4\npandas==2.2.1\nmatplotlib==3.8.3\nscikit-learn==1.4.1.post1\nseaborn==0.13.2\nxgboost==2.0.3\ntensorflow==2.15.0" 
+"streamlit==1.32.0\nnumpy==1.26.4\npandas==2.2.1\nmatplotlib==3.8.3\nscikit-learn==1.4.1.post1\nseaborn==0.13.2\nxgboost==2.0.3" 
