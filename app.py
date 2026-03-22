@@ -2,16 +2,14 @@ import streamlit as st
 import numpy as np
 import pickle
 
-# 🎯 Load model, scaler, and features
+# Load model
 model = pickle.load(open("model.pkl", "rb"))
-scaler = pickle.load(open("scaler.pkl", "rb"))
-features_list = pickle.load(open("features.pkl", "rb"))
 
-# 🧠 Title
-st.title("🧠 Mental Health Risk Prediction 💡")
+# Title
+st.title("🧠 Mental Health Treatment Prediction")
 st.write("Fill the details to predict if treatment is needed")
 
-# 📋 Inputs
+# 🔹 Inputs
 gender = st.selectbox("Gender", ["Male", "Female"])
 occupation = st.selectbox("Occupation", ["Student", "Working Professional", "Self-employed", "Unemployed"])
 self_employed = st.selectbox("Self Employed", ["Yes", "No"])
@@ -27,7 +25,7 @@ social_weakness = st.selectbox("Social Weakness", ["Yes", "No"])
 interview = st.selectbox("Mental Health Interview", ["Yes", "No"])
 care_options = st.selectbox("Care Options", ["Yes", "No"])
 
-# 🔄 Encoding
+# 🔹 Encoding
 gender = 1 if gender == "Male" else 0
 self_employed = 1 if self_employed == "Yes" else 0
 family_history = 1 if family_history == "Yes" else 0
@@ -41,16 +39,17 @@ interview = 1 if interview == "Yes" else 0
 care_options = 1 if care_options == "Yes" else 0
 
 occupation_map = {"Student": 0, "Working Professional": 1, "Self-employed": 2, "Unemployed": 3}
-days_map = {"1-14": 0, "15-30": 1, "More than 30": 2}
-work_map = {"Low": 0, "Medium": 1, "High": 2}
-
 occupation = occupation_map[occupation]
+
+days_map = {"1-14": 0, "15-30": 1, "More than 30": 2}
 days_indoors = days_map[days_indoors]
+
+work_map = {"Low": 0, "Medium": 1, "High": 2}
 work_interest = work_map[work_interest]
 
-# 🔍 Prediction
+# 🔹 Prediction
 if st.button("Predict"):
-    input_data = np.array([[
+    features = np.array([[
         gender,
         occupation,
         self_employed,
@@ -67,30 +66,32 @@ if st.button("Predict"):
         care_options
     ]])
 
-    scaled_input = scaler.transform(input_data)
-    prediction = model.predict(scaled_input)   # multi-class probabilities
+    # Sequential model: predict() returns probabilities
+    prediction = model.predict(features)
 
-    # ✅ Pick class with highest probability
     pred_class = int(np.argmax(prediction[0]))
 
-    # ✅ Map class to result
     if pred_class == 0:
         result = "No Treatment Needed"
     elif pred_class == 1:
         result = "Needs Treatment"
-    else:
+    elif pred_class == 2:
         result = "Further Evaluation Recommended"
 
     confidence = round(np.max(prediction[0]) * 100, 2)
 
     # 🎨 Confidence-based colors
-    if confidence > 70:
+    if result == "No Treatment Needed":
+        # Always green for this case
         st.success(f"🩺 Prediction: {result} (Confidence: {confidence}%)")
-    elif confidence > 40:
-        st.warning(f"🩺 Prediction: {result} (Confidence: {confidence}%)")
     else:
-        st.error(f"🩺 Prediction: {result} (Confidence: {confidence}%)")
-
+        # Confidence-based for other cases
+        if confidence > 70:
+            st.success(f"🩺 Prediction: {result} (Confidence: {confidence}%)")
+        elif confidence > 40:
+            st.warning(f"🩺 Prediction: {result} (Confidence: {confidence}%)")
+        else:
+            st.error(f"🩺 Prediction: {result} (Confidence: {confidence}%)")
 
 
 import os
